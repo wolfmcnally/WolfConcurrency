@@ -1,0 +1,18 @@
+use_frameworks!
+
+platform :ios, '12.0'
+
+pod 'WolfLog', :path => '../../WolfLog'
+pod 'WolfNumerics', :path => '../../WolfNumerics'
+pod 'WolfStrings', :path => '../../WolfStrings'
+pod 'WolfPipe', :path => '../../WolfPipe'
+pod 'WolfFoundation', :path => '../../WolfFoundation'
+pod 'ExtensibleEnumeratedName', :path => '../../ExtensibleEnumeratedName'
+
+target 'WolfConcurrency_Example' do
+  pod 'WolfConcurrency', :path => '../'
+
+  target 'WolfConcurrency_Tests' do
+    inherit! :search_paths
+  end
+end

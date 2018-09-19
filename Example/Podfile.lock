@@ -1,0 +1,58 @@
+PODS:
+  - ExtensibleEnumeratedName (1.0)
+  - WolfConcurrency (0.1.0):
+    - WolfFoundation
+    - WolfLog
+    - WolfNumerics
+  - WolfFoundation (0.1.0):
+    - WolfNumerics
+    - WolfPipe
+    - WolfStrings
+  - WolfLog (1.0.0):
+    - ExtensibleEnumeratedName
+    - WolfNumerics
+    - WolfStrings
+  - WolfNumerics (1.0)
+  - WolfPipe (1.0)
+  - WolfStrings (1.0.0):
+    - ExtensibleEnumeratedName
+    - WolfNumerics
+    - WolfPipe
+
+DEPENDENCIES:
+  - ExtensibleEnumeratedName (from `../../ExtensibleEnumeratedName`)
+  - WolfConcurrency (from `../`)
+  - WolfFoundation (from `../../WolfFoundation`)
+  - WolfLog (from `../../WolfLog`)
+  - WolfNumerics (from `../../WolfNumerics`)
+  - WolfPipe (from `../../WolfPipe`)
+  - WolfStrings (from `../../WolfStrings`)
+
+EXTERNAL SOURCES:
+  ExtensibleEnumeratedName:
+    :path: "../../ExtensibleEnumeratedName"
+  WolfConcurrency:
+    :path: "../"
+  WolfFoundation:
+    :path: "../../WolfFoundation"
+  WolfLog:
+    :path: "../../WolfLog"
+  WolfNumerics:
+    :path: "../../WolfNumerics"
+  WolfPipe:
+    :path: "../../WolfPipe"
+  WolfStrings:
+    :path: "../../WolfStrings"
+
+SPEC CHECKSUMS:
+  ExtensibleEnumeratedName: e2be15c3841ede318c17a81fb07ca815a4011e88
+  WolfConcurrency: b0cc9a4267b437d2125fd4e55ac9cc3dcd549e39
+  WolfFoundation: 2c70cbe16a168d02fb925864a7dcfc41521e09d8
+  WolfLog: 49f8328af0910c7e85e0ee1846b911a8523d91a7
+  WolfNumerics: 2f24ca5dc4b423c73e1fa18a3687176e964a65de
+  WolfPipe: 0b6ce8bc1911461f54e96474db86bca1411e4aa7
+  WolfStrings: 42521596ca7e2298e57210b366b5525e0f42f33d
+
+PODFILE CHECKSUM: d9fb379ff52e42ac31bb4c5142547263dd5d15d8
+
+COCOAPODS: 1.6.0.beta.1
