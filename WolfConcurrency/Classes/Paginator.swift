@@ -22,6 +22,8 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
+import WolfPipe
+
 /// Manages a paginated result set from a database query. Repeats the query with different
 ///
 /// The user provides `recordsPerPage` which corresponds to the SQL LIMIT argument, and a `retrieve`
@@ -64,7 +66,7 @@ public class Paginator<T> {
                 if self.pagePromises[pageIndex] != nil {
                     self.pagePromises[pageIndex]!.append(pagePromise)
                 } else {
-                    let pagePromise = self.retrieve(startIndex, maxRecords).map(to: pagePromise) { (pagePromise, result: RetrieveResult) in
+                    let pagePromise = self.retrieve(startIndex, maxRecords).runTransforming(to: pagePromise) { (pagePromise, result: RetrieveResult) in
                         if let newCountOfRecords = result.countOfRecords, self.countOfRecords == nil {
                             self.countOfRecords = newCountOfRecords
                         }
@@ -92,7 +94,7 @@ public class Paginator<T> {
                 if self.recordPromises[pageIndex] != nil {
                     self.recordPromises[pageIndex]!.append((recordPromise: recordPromise, itemIndex: itemIndex))
                 } else {
-                    let recordPromise = self.retrievePage(at: pageIndex).map(to: recordPromise) { (recordPromise, page) in
+                    let recordPromise = self.retrievePage(at: pageIndex).runTransforming(to: recordPromise) { (recordPromise, page) in
                         self.pages[pageIndex] = page
                         for i in self.recordPromises[pageIndex]! {
                             let record = page[i.itemIndex]
@@ -161,21 +163,18 @@ public class Paginator<T> {
 
         private func run() {
             dispatchOnMain(afterDelay: 4) {
-                self.paginator.retrieveRecord(at: 5).then { record in
-                    print(record)
-                    }.run()
+                run <| self.paginator.retrieveRecord(at: 5)
+                ||> { record in print(record) }
             }
 
             dispatchOnMain(afterDelay: 4) {
-                self.paginator.retrieveRecord(at: 5).then { record in
-                    print(record)
-                    }.run()
+                run <| self.paginator.retrieveRecord(at: 5)
+                ||> { record in print(record) }
             }
 
             dispatchOnMain(afterDelay: 5) {
-                self.paginator.retrieveRecord(at: 55).then { record in
-                    print(record)
-                    }.run()
+                run <| self.paginator.retrieveRecord(at: 55)
+                ||> { record in print(record) }
             }
         }
     }

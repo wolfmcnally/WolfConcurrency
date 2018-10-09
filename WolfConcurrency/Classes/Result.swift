@@ -46,10 +46,11 @@ public protocol ResultSummary {
 }
 
 /// Represents a process result with a specific type returned upon success.
-/// On success it is associated with a generic, process-dependent type.
-/// On failure it is associated with an Error.
-/// Aborted means there was no error, but the original process should not take action associated with success or failure.
-/// Canceled means the original process should not be called back at all.
+///
+///   * On success it is associated with a generic, process-dependent type.
+///   * On failure it is associated with an Error.
+///   * Aborted means there was no error, but the original process should not take action associated with success or failure.
+///   * Canceled means the original process should not be called back at all.
 public enum Result<T>: ResultSummary {
     case success(T)
     case failure(Error)
