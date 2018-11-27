@@ -11,7 +11,7 @@ import WolfFoundation
 
 precedencegroup SequencePrecedence {
     associativity: left
-    higherThan: PipeBackwardPrecedence
+    higherThan: BackwardApplicationPrecedence
 }
 
 precedencegroup SimultaneousPrecedence {

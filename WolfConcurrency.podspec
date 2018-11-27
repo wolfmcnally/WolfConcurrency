@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name             = 'WolfConcurrency'
-    s.version          = '1.1'
+    s.version          = '1.1.1'
     s.summary          = 'Swift tools and conveniences for concurrency, including Dispatch and an implementation of promises.'
 
     s.homepage         = 'https://github.com/wolfmcnally/WolfConcurrency'
