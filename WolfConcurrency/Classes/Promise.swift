@@ -36,7 +36,7 @@ public typealias DataPromise = Promise<Data>
 public class Promise<T>: Cancelable, CustomStringConvertible {
     public typealias `Self` = Promise<T>
     public typealias ValueType = T
-    public typealias ResultType = Result<T>
+    public typealias ResultType = Result<T, AnyError>
 
     /// A block that executes the core functionality of the promise.
     ///
@@ -75,7 +75,7 @@ public class Promise<T>: Cancelable, CustomStringConvertible {
         switch result {
         case nil:
             return nil
-        case .success(let value)?:
+        case .value(let value)?:
             return value
         default:
             fatalError("Invalid value: \(self).")
@@ -154,14 +154,18 @@ public class Promise<T>: Cancelable, CustomStringConvertible {
     @discardableResult func runTransforming<U>(to uPromise: Promise<U>, with success: @escaping (_ uPromise2: Promise<U>, _ tPromiseValue: ValueType) -> Void) -> Promise<U> {
         run { tPromise in
             switch tPromise.result! {
-            case .success(let tValue):
+            case .value(let tValue):
                 success(uPromise, tValue)
-            case .failure(let error):
-                uPromise.fail(error)
-            case .aborted:
-                uPromise.abort()
-            case .canceled:
-                uPromise.cancel()
+            case .error(let anyError):
+                let error = anyError.error
+                switch error {
+                case is Aborted:
+                    uPromise.abort()
+                case is Canceled:
+                    uPromise.cancel()
+                default:
+                    uPromise.fail(anyError)
+                }
             }
         }
         return uPromise
@@ -276,15 +280,19 @@ public class Promise<T>: Cancelable, CustomStringConvertible {
         return Promise<T> { (catchPromise: Promise<T>) in
             self.run { throwPromise in
                 switch throwPromise.result! {
-                case .success(let value):
+                case .value(let value):
                     catchPromise.keep(value)
-                case .failure(let error):
-                    catchPromise.fail(error)
-                    failure(error)
-                case .aborted:
-                    catchPromise.abort()
-                case .canceled:
-                    catchPromise.cancel()
+                case .error(let anyError):
+                    let error = anyError.error
+                    switch error {
+                    case is Aborted:
+                        catchPromise.abort()
+                    case is Canceled:
+                        catchPromise.cancel()
+                    default:
+                        catchPromise.fail(error)
+                        failure(error)
+                    }
                 }
             }
         }
@@ -294,14 +302,18 @@ public class Promise<T>: Cancelable, CustomStringConvertible {
         return Promise<T> { (recoverPromise: Promise<T>) in
             self.run { failingPromise in
                 switch failingPromise.result! {
-                case .success(let value):
+                case .value(let value):
                     recoverPromise.keep(value)
-                case .failure(let error):
-                    failing(error, recoverPromise)
-                case .aborted:
-                    recoverPromise.abort()
-                case .canceled:
-                    recoverPromise.cancel()
+                case .error(let anyError):
+                    let error = anyError.error
+                    switch error {
+                    case is Aborted:
+                        recoverPromise.abort()
+                    case is Canceled:
+                        recoverPromise.cancel()
+                    default:
+                        failing(error, recoverPromise)
+                    }
                 }
             }
         }
@@ -311,17 +323,21 @@ public class Promise<T>: Cancelable, CustomStringConvertible {
         return Promise<T> { (finallyPromise: Promise<T>) in
             self.run { finishedPromise in
                 switch finishedPromise.result! {
-                case .success(let value):
+                case .value(let value):
                     finallyPromise.keep(value)
                     block()
-                case .failure(let error):
-                    finallyPromise.fail(error)
-                    block()
-                case .aborted:
-                    finallyPromise.abort()
-                    block()
-                case .canceled:
-                    finallyPromise.cancel()
+                case .error(let anyError):
+                    let error = anyError.error
+                    switch error {
+                    case is Aborted:
+                        finallyPromise.abort()
+                        block()
+                    case is Canceled:
+                        finallyPromise.cancel()
+                    default:
+                        finallyPromise.fail(error)
+                        block()
+                    }
                 }
             }
         }
@@ -338,21 +354,21 @@ public class Promise<T>: Cancelable, CustomStringConvertible {
     public func keep(_ value: ValueType) {
         guard self.result == nil else { return }
 
-        self.result = ResultType.success(value)
+        self.result = ResultType.value(value)
         done()
     }
 
     public func fail(_ error: Error) {
         guard self.result == nil else { return }
 
-        self.result = ResultType.failure(error)
+        self.result = ResultType.error(AnyError(error))
         done()
     }
 
     public func abort() {
         guard self.result == nil else { return }
 
-        self.result = ResultType.aborted
+        self.result = ResultType.error(AnyError(aborted))
         done()
     }
 
@@ -360,7 +376,7 @@ public class Promise<T>: Cancelable, CustomStringConvertible {
         guard self.result == nil else { return }
 
         task?.cancel()
-        self.result = ResultType.canceled
+        self.result = ResultType.error(AnyError(canceled))
         done()
     }
 
@@ -377,7 +393,7 @@ extension Promise where T == Void {
     public func keep() {
         guard self.result == nil else { return }
 
-        self.result = ResultType.success(())
+        self.result = ResultType.value(())
         done()
     }
 }
