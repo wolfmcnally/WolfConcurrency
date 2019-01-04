@@ -343,41 +343,33 @@ public class Promise<T>: Cancelable, CustomStringConvertible {
         }
     }
 
-    private func done() {
+    private func done(_ result: ResultType) {
+        guard self.result == nil else { return }
+        self.result = result
         onDone(self)
-        onDone = { _ in
-            fatalError("done")
-        }
+        onDone = Self.doneTwice
+        task?.cancel()
         task = nil
     }
 
-    public func keep(_ value: ValueType) {
-        guard self.result == nil else { return }
+    private static func doneTwice(_ promise: Promise<T>) {
+        fatalError("done twice")
+    }
 
-        self.result = ResultType.value(value)
-        done()
+    public func keep(_ value: ValueType) {
+        done(.value(value))
     }
 
     public func fail(_ error: Error) {
-        guard self.result == nil else { return }
-
-        self.result = ResultType.error(AnyError(error))
-        done()
+        done(.error(AnyError(error)))
     }
 
     public func abort() {
-        guard self.result == nil else { return }
-
-        self.result = ResultType.error(AnyError(aborted))
-        done()
+        done(.error(AnyError(aborted)))
     }
 
     public func cancel() {
-        guard self.result == nil else { return }
-
-        task?.cancel()
-        self.result = ResultType.error(AnyError(canceled))
-        done()
+        done(.error(AnyError(canceled)))
     }
 
     public var isCanceled: Bool {
@@ -391,47 +383,6 @@ public class Promise<T>: Cancelable, CustomStringConvertible {
 
 extension Promise where T == Void {
     public func keep() {
-        guard self.result == nil else { return }
-
-        self.result = ResultType.value(())
-        done()
+        done(.value(()))
     }
 }
-
-//public func testPromise() {
-//    typealias IntPromise = Promise<Int>
-//
-//    func rollDie() -> IntPromise {
-//        return IntPromise { promise in
-//            dispatchOnBackground(afterDelay: Random.number(1.0..3.0)) {
-//                dispatchOnMain {
-//                    promise.keep(Random.number(1...6))
-//                }
-//            }
-//        }
-//    }
-//
-//    func sum(_ a: IntPromise, _ b: IntPromise) -> IntPromise {
-//        return IntPromise { promise in
-//            func _sum() {
-//                if let a = a.value, let b = b.value {
-//                    promise.keep(a + b)
-//                }
-//            }
-//
-//            a.run {
-//                print("a: \($0)")
-//                _sum()
-//            }
-//
-//            b.run {
-//                print("b: \($0)")
-//                _sum()
-//            }
-//        }
-//    }
-//
-//    sum(rollDie(), rollDie()).run {
-//        print("sum: \($0)")
-//    }
-//}
