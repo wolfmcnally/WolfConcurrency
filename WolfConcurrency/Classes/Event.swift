@@ -42,8 +42,8 @@ public class Event<T> {
             self.closure = closure
         }
 
-        public var hashValue: Int {
-            return id.hashValue
+        public func hash(into hasher: inout Hasher) {
+            hasher.combine(id)
         }
 
         public static func == (lhs: Observer, rhs: Observer) -> Bool {
