@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
     s.name             = 'WolfConcurrency'
-    s.version          = '2.0.0'
-    s.summary          = 'Swift tools and conveniences for concurrency, including Dispatch and an implementation of promises.'
+    s.version          = '3.0.0'
+    s.summary          = 'Swift tools and conveniences for concurrency.'
 
     s.homepage         = 'https://github.com/wolfmcnally/WolfConcurrency'
     s.license          = { :type => 'MIT', :file => 'LICENSE' }
