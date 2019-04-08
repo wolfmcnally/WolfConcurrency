@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name             = 'WolfConcurrency'
-    s.version          = '3.0.1'
+    s.version          = '3.0.2'
     s.summary          = 'Swift tools and conveniences for concurrency.'
 
     s.homepage         = 'https://github.com/wolfmcnally/WolfConcurrency'
@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
     s.author           = { 'Wolf McNally' => 'wolf@wolfmcnally.com' }
     s.source           = { :git => 'https://github.com/wolfmcnally/WolfConcurrency.git', :tag => s.version.to_s }
 
-    s.source_files = 'WolfConcurrency/Classes/**/*'
+    s.source_files = 'Sources/WolfConcurrency/**/*'
 
     s.swift_version = '5.0'
 
