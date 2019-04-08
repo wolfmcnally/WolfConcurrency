@@ -23,12 +23,11 @@
 //  SOFTWARE.
 
 import Foundation
-import WolfLog
 import WolfFoundation
 
-extension LogGroup {
-    public static let asynchronizer = LogGroup("asynchronizer")
-}
+// extension LogGroup {
+//     public static let asynchronizer = LogGroup("asynchronizer")
+// }
 
 public class Asynchronizer {
     public let name: String?
@@ -43,7 +42,7 @@ public class Asynchronizer {
     }
 
     public func setNeedsSync() {
-        logTrace("setNeedsSync", obj: self, group: .asynchronizer)
+        // logTrace("setNeedsSync", obj: self, group: .asynchronizer)
         _cancel()
         canceler = dispatchOnMain(afterDelay: delay) {
             self.sync()
@@ -57,18 +56,18 @@ public class Asynchronizer {
     }
 
     public func cancel() {
-        logTrace("cancel", obj: self, group: .asynchronizer)
+        // logTrace("cancel", obj: self, group: .asynchronizer)
         _cancel()
     }
 
     public func syncIfNeeded() {
-        logTrace("syncIfNeeded", obj: self, group: .asynchronizer)
+        // logTrace("syncIfNeeded", obj: self, group: .asynchronizer)
         guard canceler != nil else { return }
         sync()
     }
 
     public func sync() {
-        logTrace("sync", obj: self, group: .asynchronizer)
+        // logTrace("sync", obj: self, group: .asynchronizer)
         _cancel()
         onSync()
     }
