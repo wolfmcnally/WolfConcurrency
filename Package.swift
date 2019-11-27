@@ -13,7 +13,7 @@ let package = Package(
         ],
     dependencies: [
         .package(url: "https://github.com/wolfmcnally/WolfNumerics", from: "4.0.0"),
-        .package(url: "https://github.com/wolfmcnally/WolfFoundation", from: "4.0.0")
+        .package(url: "https://github.com/wolfmcnally/WolfFoundation", from: "5.0.0")
     ],
     targets: [
         .target(
