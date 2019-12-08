@@ -1,8 +1,7 @@
 //
-//  Asynchronizer.swift
-//  WolfConcurrency
-//
-//  Created by Wolf McNally on 5/31/17.
+//  Debouncer.swift
+//  
+//  Created by Wolf McNally on 12/2/19.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -22,56 +21,30 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
+#if canImport(Combine)
 import Foundation
-import WolfFoundation
+import Combine
 
-public final class Asynchronizer {
-    public let name: String?
-    private let delay: TimeInterval
-    private let onSync: Block
-    private var canceler: Cancelable?
+@available(iOS 13.0, *)
+public final class Debouncer: Cancellable {
+    private let publisher = PassthroughSubject<Void, Never>()
+    private let publisherCancellable: AnyCancellable
 
-    public init(name: String? = nil, delay: TimeInterval = 0.5, onSync: @escaping Block) {
-        self.name = name
-        self.delay = delay
-        self.onSync = onSync
-    }
-
-    public func setNeedsSync() {
-        _cancel()
-        canceler = dispatchOnMain(afterDelay: delay) {
-            self.sync()
-        }
-    }
-
-    private func _cancel() {
-        guard canceler != nil else { return }
-        canceler?.cancel()
-        canceler = nil
+    public init(delay: TimeInterval = 0.5, onSync: @escaping Block) {
+        publisherCancellable = publisher
+            .subscribe(on: backgroundQueue)
+            .debounce(for: .milliseconds(Int(delay * 1000)), scheduler: mainQueue)
+            .sink {
+                onSync()
+            }
     }
 
     public func cancel() {
-        _cancel()
+        publisherCancellable.cancel()
     }
 
-    public func syncIfNeeded() {
-        guard canceler != nil else { return }
-        sync()
-    }
-
-    public func sync() {
-        _cancel()
-        onSync()
-    }
-
-    deinit {
-        _cancel()
+    public func setNeedsSync() {
+        publisher.send()
     }
 }
-
-extension Asynchronizer: CustomStringConvertible {
-    public var description: String {
-        let s = ["Asynchronizer", name].flatJoined(separator: " ")
-        return s
-    }
-}
+#endif

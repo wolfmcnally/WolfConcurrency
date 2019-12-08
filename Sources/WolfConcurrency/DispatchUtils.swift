@@ -28,7 +28,7 @@ import Dispatch
 public typealias BoolBlock = (Bool) -> Void
 
 public let mainQueue = DispatchQueue.main
-public let backgroundQueue = DispatchQueue(label: "background", attributes: [.concurrent], target: nil)
+public let backgroundQueue = DispatchQueue.global()
 
 public func checkMainThread() {
     precondition(Thread.isMainThread)
