@@ -25,7 +25,7 @@
 import Foundation
 import Combine
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, *)
 public final class Debouncer: Cancellable {
     private let publisher = PassthroughSubject<Void, Never>()
     private let publisherCancellable: AnyCancellable
